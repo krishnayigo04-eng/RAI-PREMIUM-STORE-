@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAI PREMIUM STORE</title>
+<style>
+:root{--red:#ff1638;--red2:#b4001f;--bg:#080808;--card:#121212;--line:#292929;--muted:#aaa;--white:#fff}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top,#28000a 0,#080808 45%);color:var(--white);font-family:Arial,Helvetica,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#090909eF;border-bottom:1px solid #321018;backdrop-filter:blur(10px)}
+.nav{max-width:1100px;margin:auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:900;letter-spacing:2px;font-size:20px}.logo span{color:var(--red)}
+button,.btn{border:0;border-radius:10px;padding:12px 17px;font-weight:800;cursor:pointer}
+.primary{background:var(--red);color:#fff}.primary:hover{background:#ff3150}.ghost{background:#1a1a1a;color:#fff;border:1px solid #333}
+main{max-width:1100px;margin:auto;padding:28px 20px 60px}.hero{text-align:center;padding:35px 0 20px}.hero h1{font-size:42px;margin:8px}.hero p{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{background:linear-gradient(180deg,#171717,#0e0e0e);border:1px solid #302027;border-radius:18px;overflow:hidden;box-shadow:0 15px 50px #0008}.card img{width:100%;height:220px;object-fit:cover;background:#1a1a1a}.pad{padding:16px}.tag{display:inline-block;background:#40000b;color:#ff6278;padding:5px 9px;border-radius:99px;font-size:12px;font-weight:800}.price{font-size:24px;font-weight:900;margin:8px 0}.old{text-decoration:line-through;color:#777;font-size:14px;margin-right:7px}.discount{color:#65e49a;font-weight:900}
+.page{display:none}.page.active{display:block}.box{max-width:720px;margin:30px auto;background:#101010;border:1px solid #342029;border-radius:18px;padding:22px}.steps{display:flex;gap:7px;margin:0 auto 22px;max-width:720px}.step{flex:1;height:7px;background:#2a2a2a;border-radius:99px}.step.on{background:var(--red)}
+.detail-img{width:100%;max-height:360px;object-fit:cover;border-radius:14px}.row{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid #252525}.muted{color:var(--muted)}input,textarea,select{width:100%;padding:12px;background:#0b0b0b;color:#fff;border:1px solid #383838;border-radius:10px;margin:7px 0 14px}textarea{min-height:90px}.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}.notice{padding:12px;border-radius:10px;background:#21100f;border:1px solid #4a2226;color:#ffb0b8;margin:12px 0}.success{background:#0d2419;border-color:#1e5c3b;color:#8df0b8}.danger{background:#260e12;border-color:#68202b;color:#ff9aa7}
+.admin{margin-top:40px}.admin h2{margin-bottom:5px}.hidden{display:none!important}.small{font-size:12px;color:#888}
+footer{text-align:center;color:#666;padding:25px}
+@media(max-width:600px){.hero h1{font-size:30px}.nav{padding:14px}.card img{height:190px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo">RAI <span>PREMIUM</span> STORE</div><button class="ghost" onclick="showPage('home')">HOME</button></div></header>
+
+<main>
+<section id="home" class="page active">
+ <div class="hero"><div class="tag">PREMIUM GAMING IDs</div><h1>RAI PREMIUM STORE</h1><p>Red & black gaming marketplace</p></div>
+ <div id="productGrid" class="grid"></div>
+</section>
+
+<section id="details" class="page">
+ <div class="steps"><i class="step on"></i><i class="step on"></i><i class="step"></i><i class="step"></i></div>
+ <div class="box">
+  <button class="ghost" onclick="showPage('home')">← Back</button>
+  <h2 id="dTitle"></h2><img id="dImg" class="detail-img">
+  <div class="row"><span>Game</span><b id="dGame"></b></div>
+  <div class="row"><span>Price</span><b id="dPrice"></b></div>
+  <div class="row"><span>Discount</span><b id="dDiscount" class="discount"></b></div>
+  <p id="dDesc" class="muted"></p>
+  <div class="notice">Before continuing, open the store's Instagram page and follow it if you want to place an order.</div>
+  <button class="ghost" onclick="openInstagram()">Open Instagram</button>
+  <label style="display:block;margin-top:14px"><input type="checkbox" id="followed" style="width:auto"> I have followed the Instagram page</label>
+  <div class="actions"><button class="primary" onclick="continueToPayment()">CONTINUE</button></div>
+ </div>
+</section>
+
+<section id="payment" class="page">
+ <div class="steps"><i class="step on"></i><i class="step on"></i><i class="step on"></i><i class="step"></i></div>
+ <div class="box">
+  <h2>Payment</h2><p class="muted">Amount to pay: <b id="payAmount"></b></p>
+  <div style="text-align:center;padding:20px;background:#090909;border-radius:14px">
+   <img id="qr" src="" alt="UPI QR" style="width:230px;height:230px;object-fit:contain;background:#fff;padding:8px;border-radius:10px">
+   <p>UPI ID: <b id="upi"></b></p>
+  </div>
+  <label>12-digit UTR / transaction reference</label>
+  <input id="utr" inputmode="numeric" maxlength="12" placeholder="Enter 12 digits">
+  <div class="notice">UTR entry alone does not prove payment. The server must verify the transaction with the payment provider before marking an order successful.</div>
+  <button class="primary" style="width:100%" onclick="verifyPayment()">VERIFY PAYMENT</button>
+  <div id="paymentResult" class="notice hidden"></div>
+ </div>
+</section>
+
+<section id="delivery" class="page">
+ <div class="steps"><i class="step on"></i><i class="step on"></i><i class="step on"></i><i class="step on"></i></div>
+ <div class="box">
+  <h2 id="deliveryTitle">Order status</h2>
+  <div id="deliveryBody"></div>
+  <button class="ghost" onclick="showPage('home')">Back to Store</button>
+ </div>
+</section>
+
+<section id="admin" class="page admin">
+ <div class="box">
+  <h2>Admin Panel</h2>
+  <p class="muted">Demo/local admin editor. For production, move authentication and product data to a secure server.</p>
+  <div id="loginBox">
+   <input id="adminUser" placeholder="Username">
+   <input id="adminPass" type="password" placeholder="Password">
+   <button class="primary" onclick="adminLogin()">LOGIN</button>
+  </div>
+  <div id="editor" class="hidden">
+   <label>Product title</label><input id="aTitle">
+   <label>Game</label><input id="aGame">
+   <label>Image URL</label><input id="aImage">
+   <label>Original price (₹)</label><input id="aPrice" type="number">
+   <label>Discount (%)</label><input id="aDiscount" type="number" min="0" max="90">
+   <label>Details</label><textarea id="aDesc"></textarea>
+   <label>Instagram URL</label><input id="aInstagram">
+   <label>UPI ID</label><input id="aUpi">
+   <label>QR image URL</label><input id="aQr">
+   <button class="primary" onclick="saveProduct()">SAVE PRODUCT</button>
+   <button class="ghost" onclick="logoutAdmin()">LOGOUT</button>
+   <p class="small">Never put real Google/Facebook passwords or other account credentials into frontend/localStorage.</p>
+  </div>
+ </div>
+</section>
+</main>
+<footer>© RAI PREMIUM STORE</footer>
+
+<script>
+const DEFAULT={
+ title:"Premium Gaming ID", game:"Your Game", image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+ price:1999, discount:15, desc:"Premium gaming account listing. Add your verified listing details here.",
+ instagram:"https://instagram.com/", upi:"yourupi@upi",
+ qr:"https://dummyimage.com/500x500/ffffff/000000.png&text=UPI+QR"
+};
+let product=JSON.parse(localStorage.getItem("raiProduct")||"null")||DEFAULT, selected=null;
+
+function finalPrice(){return Math.round(product.price*(1-product.discount/100))}
+function render(){
+ const grid=document.getElementById("productGrid");
+ grid.innerHTML=`<article class="card"><img src="${esc(product.image)}"><div class="pad">
+ <span class="tag">${product.discount}% OFF</span><h2>${esc(product.title)}</h2><div class="muted">${esc(product.game)}</div>
+ <div class="price"><span class="old">₹${product.price}</span> ₹${finalPrice()} <span class="discount">-${product.discount}%</span></div>
+ <button class="primary" style="width:100%" onclick="openDetails()">BUY NOW</button></div></article>`;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function showPage(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");scrollTo(0,0)}
+function openDetails(){
+ selected=product;
+ dTitle.textContent=product.title; dImg.src=product.image; dGame.textContent=product.game;
+ dPrice.textContent="₹"+finalPrice(); dDiscount.textContent=product.discount+"% OFF"; dDesc.textContent=product.desc;
+ followed.checked=false; showPage("details");
+}
+function openInstagram(){window.open(product.instagram,"_blank","noopener")}
+function continueToPayment(){
+ if(!followed.checked){alert("Please confirm that you followed the Instagram page.");return}
+ payAmount.textContent="₹"+finalPrice(); upi.textContent=product.upi; qr.src=product.qr; utr.value=""; paymentResult.classList.add("hidden"); showPage("payment");
+}
+async function verifyPayment(){
+ const v=utr.value.trim(), box=paymentResult;
+ if(!/^\d{12}$/.test(v)){box.textContent="Enter exactly 12 digits.";box.className="notice danger";box.classList.remove("hidden");return}
+ /* Production: replace this demo request with your server/payment-provider verification API.
+    Never trust a UTR by itself. */
+ box.textContent="Payment verification is pending server-side verification. No account details are released until the payment provider confirms the transaction.";
+ box.className="notice";box.classList.remove("hidden");
+}
+function adminLogin(){
+ // SECURITY: do not hard-code the real admin password in client-side code.
+ // Connect this form to a server-side authentication endpoint.
+ const u=adminUser.value.trim(), p=adminPass.value;
+ if(u && p){loginBox.classList.add("hidden");editor.classList.remove("hidden");fillEditor();}
+ else alert("Enter admin credentials.");
+}
+function fillEditor(){
+ aTitle.value=product.title;aGame.value=product.game;aImage.value=product.image;aPrice.value=product.price;aDiscount.value=product.discount;
+ aDesc.value=product.desc;aInstagram.value=product.instagram;aUpi.value=product.upi;aQr.value=product.qr;
+}
+function saveProduct(){
+ product={title:aTitle.value||DEFAULT.title,game:aGame.value||DEFAULT.game,image:aImage.value||DEFAULT.image,
+ price:Number(aPrice.value)||0,discount:Number(aDiscount.value)||0,desc:aDesc.value,instagram:aInstagram.value,upi:aUpi.value,qr:aQr.value};
+ localStorage.setItem("raiProduct",JSON.stringify(product));render();alert("Product saved on this device.");showPage("home");
+}
+function logoutAdmin(){editor.classList.add("hidden");loginBox.classList.remove("hidden");adminPass.value=""}
+document.addEventListener("keydown",e=>{if(e.ctrlKey&&e.shiftKey&&e.key.toUpperCase()==="A")showPage("admin")});
+render();
+</script>
+</body>
+</html>
